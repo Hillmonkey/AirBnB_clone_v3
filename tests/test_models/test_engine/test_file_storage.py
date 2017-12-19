@@ -13,6 +13,7 @@ from models.place import Place
 from models.review import Review
 from models.state import State
 from models.user import User
+import re
 import json
 import os
 import pep8
@@ -110,3 +111,48 @@ class TestFileStorage(unittest.TestCase):
         with open("file.json", "r") as f:
             js = f.read()
         self.assertEqual(json.loads(string), json.loads(js))
+
+    def test_count(self):
+        """test that count return the number of objects in storage"""
+        storage = FileStorage()
+        save = FileStorage._FileStorage__objects
+        FileStorage._FileStorage__objects = {}
+
+        # create & save objets to storage
+        for key, value in classes.items():
+            instance = value()
+            instance_key = instance.__class__.__name__ + "." + instance.id
+            FileStorage._FileStorage__objects[instance_key] = instance
+
+        # check count returns the number of objects specified by class name
+        for clsname in classes.keys():
+            cls_obj_dict = {k: v for k, v in
+                            storage._FileStorage__objects.items()
+                            if clsname in k}
+            self.assertEqual(len(cls_obj_dict), storage.count(clsname))
+
+        # check count returns number of all objects when cls=None
+        self.assertEqual(len(FileStorage._FileStorage__objects),
+                         storage.count())
+        FileStorage._FileStorage__objects = save
+
+    def test_get(self):
+        """test that get return object based on class name and id"""
+        storage = FileStorage()
+        save = FileStorage._FileStorage__objects
+        FileStorage._FileStorage__objects = {}
+
+        # create & save objects to storage
+        for key, value in classes.items():
+            instance = value()
+            instance_key = instance.__class__.__name__ + "." + instance.id
+            FileStorage._FileStorage__objects[instance_key] = instance
+
+            # extract id from the object saved
+            for k, v in FileStorage._FileStorage__objects.items():
+                if key in k:
+                    match = re.search('[^.][a-z0-9-]*$', k)
+                    obj_id = match.group(0)
+                    obj = FileStorage._FileStorage__objects[k]
+                self.assertIs(storage.get(key, obj_id), obj)
+        FileStorage._FileStorage__objects = save
