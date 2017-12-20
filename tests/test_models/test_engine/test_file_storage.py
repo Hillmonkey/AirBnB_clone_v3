@@ -148,15 +148,12 @@ class TestFileStorage(unittest.TestCase):
             instance_key = instance.__class__.__name__ + "." + instance.id
             FileStorage._FileStorage__objects[instance_key] = instance
 
-            # extract id from the object saved
             for k, v in FileStorage._FileStorage__objects.items():
                 with self.subTest(k=k, v=v):
                     if key in k:
+                        # extract id from the object saved
                         match = re.search('[^.][a-z0-9-]*$', k)
                         obj_id = match.group(0)
-                        print(key, obj_id)
                         obj = FileStorage._FileStorage__objects[k]
-                        print(obj)
-                    print(storage.get(key, obj_id))
-                    self.assertIs(storage.get(key, obj_id), obj)
+                        self.assertIs(storage.get(key, obj_id), obj)
         FileStorage._FileStorage__objects = save
