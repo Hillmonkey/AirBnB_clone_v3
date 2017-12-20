@@ -22,6 +22,7 @@ class FileStorage:
     # string - path to the JSON file
     __file_path = "file.json"
     # dictionary - empty but will store all objects by <class name>.id
+    # __object = {key: value} = {<class_name>.id: object}
     __objects = {}
 
     def all(self, cls=None):
@@ -77,3 +78,12 @@ class FileStorage:
     def close(self):
         """Deserialize JSON file to objects"""
         self.reload()
+
+    def count(self, cls=None):
+        """Return number of objects in storage"""
+        return len(self.all(cls))
+
+    def get(self, cls, id):
+        """Return object based on it class name and id"""
+        key = cls + "." + id
+        return self.all().get(key, None)
