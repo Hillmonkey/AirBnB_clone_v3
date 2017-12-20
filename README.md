@@ -1,7 +1,7 @@
-# <img src="https://www.holbertonschool.com/assets/holberton-logo-simplified-71b02868461c07d54553e4a7cc05d1926681a6755cc19030b0458f2d70ae9909.png" width="30"> AirBnB Clone V.2 - MYSQL
+# <img src="https://www.holbertonschool.com/assets/holberton-logo-simplified-71b02868461c07d54553e4a7cc05d1926681a6755cc19030b0458f2d70ae9909.png" width="30"> AirBnB Clone V.3 - API
 
 ## Synopsis
-This is the 2nd version of our AirBnB clone project. We will be using a MySQL database with the following environmental variables:
+This is the 3rd version of our AirBnB clone project. We will continue to use a MySQL database with the following environmental variables:
 
 <ul>
 <li><code>HBNB_ENV</code>: running environment. It can be &ldquo;dev&rdquo; or &ldquo;test&rdquo; for the moment (&ldquo;production&rdquo; soon!)</li>
@@ -158,6 +158,12 @@ EOF  all  create  destroy  help  quit  show  update
 No known bugs at this time. 
 
 ## Authors
+
+
+###### Version 3
+
+- Tanya Kryukova - [Github](https://github.com/tanyastropheus) / [Twitter](https://twitter.com/tyastropheus)
+- Larry Madeo - [Github](https://github.com/Hillmonkey) / [Twitter](https://twitter.com/larmalade)
 
 ###### Version 2
 
