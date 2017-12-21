@@ -9,3 +9,4 @@ versions/
 *.sql
 file.json
 *.swp
+*.swo
