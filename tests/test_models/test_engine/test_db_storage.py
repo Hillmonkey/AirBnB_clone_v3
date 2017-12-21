@@ -3,7 +3,6 @@
 testing methods for dbstorage"""
 
 
-#from models.engine import DBStorage
 from models.engine import db_storage
 from models.base_model import Base
 from models.amenity import Amenity
