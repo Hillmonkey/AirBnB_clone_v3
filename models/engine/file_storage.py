@@ -36,6 +36,15 @@ class FileStorage:
             return {k: v for k, v in self.__objects.items()
                     if v.__class__ == cls}
 
+    def count(self, cls=None):
+        """Return number of objects in storage"""
+        return len(self.all(cls))
+
+    def get(self, cls, id):
+        """Return object based on it class name and id"""
+        key = cls + "." + id
+        return self.all().get(key, None)
+
     def new(self, obj):
         """sets in __objects the obj with key <obj class name>.id"""
         if obj is not None:
