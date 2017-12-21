@@ -15,12 +15,15 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 import inspect
 import json
+import inspect
 import os
 import pep8
 import unittest
 import sqlalchemy
 
+
 DBStorage = db_storage.DBStorage
+
 classes = {
     'Amenity': Amenity,
     'City': City,
@@ -29,7 +32,6 @@ classes = {
     'Review': Review,
     'User': User
 }
-
 
 class TestDBStorageDocs(unittest.TestCase):
     """Tests to check the documentation and style of DBStorage class"""
