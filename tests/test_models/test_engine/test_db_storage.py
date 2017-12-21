@@ -15,12 +15,13 @@ from models.user import User
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 import json
+import inspect
 import os
 import pep8
 import unittest
 import sqlalchemy
 
-name2class = {
+classes = {
     'Amenity': Amenity,
     'City': City,
     'Place': Place,
@@ -28,21 +29,53 @@ name2class = {
     'Review': Review,
     'User': User
 }
+# TODO: use classes in test_new() and test_save()
+# see test_file_storage.py for reference
 
 
-class TestDBFormatting(unittest.TestCase):
-    """class: TestDBFormatting
-    tests for pep8 compliance and existence of doc strings"""
+class TestDbStorageDocs(unittest.TestCase):
+    """Tests to check the documentation and style of DbStorage class"""
+    @classmethod
+    def setUpClass(cls):
+        """Set up for the doc tests"""
+        cls.db_f = inspect.getmembers(DBStorage, inspect.isfunction)
 
-    def TestPep8(self):
-        """method: TestPep8
-        tests for pep8 compliance of DBStorage"""
-        pass
+    def test_pep8_conformance_db_storage(self):
+        """Test that models/engine/db_storage.py conforms to PEP8."""
+        pep8s = pep8.StyleGuide(quiet=True)
+        result = pep8s.check_files(['models/engine/db_storage.py'])
+        self.assertEqual(result.total_errors, 0,
+                         "Found code style errors (and warnings).")
 
-    def TestDocStrings(self):
-        """method: TestDocStrings
-        tests for existence of doc strings"""
-        pass
+    def test_pep8_conformance_test_db_storage(self):
+        """Test tests/test_models/test_db_storage.py conforms to PEP8."""
+        pep8s = pep8.StyleGuide(quiet=True)
+        result = pep8s.check_files(['tests/test_models/test_engine/\
+test_db_storage.py'])
+        self.assertEqual(result.total_errors, 0,
+                         "Found code style errors (and warnings).")
+
+    def test_db_storage_module_docstring(self):
+        """Test for the db_storage.py module docstring"""
+        self.assertIsNot(db_storage.__doc__, None,
+                         "db_storage.py needs a docstring")
+        self.assertTrue(len(db_storage.__doc__) >= 1,
+                        "db_storage.py needs a docstring")
+
+    def test_db_storage_class_docstring(self):
+        """Test for the DBStorage class docstring"""
+        self.assertIsNot(DBStorage.__doc__, None,
+                         "DBStorage class needs a docstring")
+        self.assertTrue(len(FileStorage.__doc__) >= 1,
+                        "DBStorage class needs a docstring")
+
+    def test_db_func_docstrings(self):
+        """Test for the presence of docstrings in DBStorage methods"""
+        for func in self.db_f:
+            self.assertIsNot(func[1].__doc__, None,
+                             "{:s} method needs a docstring".format(func[0]))
+            self.assertTrue(len(func[1].__doc__) >= 1,
+                            "{:s} method needs a docstring".format(func[0]))
 
 
 class TestDBStorage(unittest.TestCase):
