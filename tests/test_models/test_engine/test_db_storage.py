@@ -33,12 +33,13 @@ classes = {
     'User': User
 }
 
+
 class TestDBStorageDocs(unittest.TestCase):
     """Tests to check the documentation and style of DBStorage class"""
     @classmethod
     def setUpClass(cls):
         """Set up for the doc tests"""
-        cls.fs_f = inspect.getmembers(DBStorage, inspect.isfunction)
+        cls.db_f = inspect.getmembers(DBStorage, inspect.isfunction)
 
     def test_pep8_conformance_db_storage(self):
         """Test that models/engine/db_storage.py conforms to PEP8."""
@@ -69,9 +70,9 @@ test_db_storage.py'])
         self.assertTrue(len(DBStorage.__doc__) >= 1,
                         "DBStorage class needs a docstring")
 
-    def test_fs_func_docstrings(self):
+    def test_db_func_docstrings(self):
         """Test for the presence of docstrings in DBStorage methods"""
-        for func in self.fs_f:
+        for func in self.db_f:
             self.assertIsNot(func[1].__doc__, None,
                              "{:s} method needs a docstring".format(func[0]))
             self.assertTrue(len(func[1].__doc__) >= 1,
