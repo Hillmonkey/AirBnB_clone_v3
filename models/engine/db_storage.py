@@ -52,6 +52,15 @@ class DBStorage:
                     objects[obj.__class__.__name__ + '.' + obj.id] = obj
         return objects
 
+    def count(self, cls=None):
+        """Returns the number of objects in storage with given class name"""
+        return len(self.all(cls))
+
+    def get(self, cls, id):
+        """Returns the object based on the class name and its ID"""
+        key = cls + "." + id
+        return self.all().get(key, None)
+
     def reload(self):
         session_factory = sessionmaker(bind=self.__engine,
                                        expire_on_commit=False)
@@ -73,3 +82,12 @@ class DBStorage:
     def close(self):
         """Dispose of current session if active"""
         self.__session.remove()
+
+    def count(self, cls=None):
+        """Return number of objects in storage"""
+        return len(self.all(cls))
+
+    def get(self, cls, id):
+        """Return object based on it class name and id"""
+        key = cls + "." + id
+        return self.all().get(key, None)
