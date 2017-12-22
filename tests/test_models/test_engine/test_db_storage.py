@@ -3,6 +3,7 @@
 testing methods for dbstorage"""
 
 
+from models import storage
 from models.engine import db_storage
 from models.base_model import Base
 from models.amenity import Amenity
@@ -13,12 +14,16 @@ from models.review import Review
 from models.user import User
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
+from os import getenv
+import inspect
 import json
 import inspect
-import os
 import pep8
 import unittest
 import sqlalchemy
+
+
+DBStorage = db_storage.DBStorage
 
 classes = {
     'Amenity': Amenity,
@@ -28,12 +33,10 @@ classes = {
     'Review': Review,
     'User': User
 }
-# TODO: use classes in test_new() and test_save()
-# see test_file_storage.py for reference
 
 
-class TestDbStorageDocs(unittest.TestCase):
-    """Tests to check the documentation and style of DbStorage class"""
+class TestDBStorageDocs(unittest.TestCase):
+    """Tests to check the documentation and style of DBStorage class"""
     @classmethod
     def setUpClass(cls):
         """Set up for the doc tests"""
@@ -65,7 +68,7 @@ test_db_storage.py'])
         """Test for the DBStorage class docstring"""
         self.assertIsNot(DBStorage.__doc__, None,
                          "DBStorage class needs a docstring")
-        self.assertTrue(len(FileStorage.__doc__) >= 1,
+        self.assertTrue(len(DBStorage.__doc__) >= 1,
                         "DBStorage class needs a docstring")
 
     def test_db_func_docstrings(self):
@@ -82,26 +85,43 @@ class TestDBStorage(unittest.TestCase):
     all tests to run on Database Storage"""
 
     def setUp(self):
-        """method: setUp
-        connect to database before running tests in this class"""
-        self.session = db_storage.DBStorage()
+        """connect & reload the database"""
+        self.storage = db_storage.DBStorage()
+        # how come the reload() in models/__init__ doesn't take care of it?
+        self.storage.reload()
 
     def tearDown(self):
-        """method: tearDown
-        shut down database connection"""
-        self.session.close()
+        '''terminate database connection'''
+        self.storage.close()
 
     def test_get(self):
-        """method: test_get
-        database copy of new object == copy via get"""
-        new_obj = Amenity()
-        print()
-        print("++++++++++ db-test-get ++++++++++")
-        print("new_obj = {}".format(new_obj))
-        self.session.new(new_obj)
-        output = self.session.get("Amenity", new_obj.id)
-        print()
-        print("++++ Larry test +++++++++++")
-        print("type(self.session) = {}".format(type(self.session)))
-        print("type(new_obj) = {}".format(type(new_obj)))
-        self.assertEqual(5, 4)
+        '''test that get returns object based on cls name & id
+        database copy of new object == copy via get'''
+        new_obj = State(name="Test get State")
+        self.storage.new(new_obj)
+        self.storage.save()
+        output = self.storage.get("State", new_obj.id)
+        self.assertIs(new_obj, output)
+
+    def test_count(self):
+        '''test that count returns the number of objects based on clsname,
+        or number of all objects if cls=None'''
+        new_obj = State(name="Test count State")
+        self.storage.new(new_obj)
+        self.storage.save()
+
+        state_count = self.storage.count("State")
+#        print("state count returned by count():", state_count)
+        state_num_query = self.storage._DBStorage__session.query(State).count()
+#        print("type of:", type(storage._DBStorage__session))
+#        print("state count returned by query:", state_count)
+        self.assertEqual(state_count, state_num_query)
+
+        all_count = self.storage.count()
+#        print("all object count returned by count():", all_count)
+        obj_num_query = 0
+        for key, value in classes.items():
+            obj_num_query += self.storage._DBStorage__session.query(
+                value).count()
+#        print("all object count returned by query:", obj_num_query)
+        self.assertEqual(all_count, obj_num_query)

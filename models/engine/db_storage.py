@@ -24,10 +24,12 @@ name2class = {
 
 
 class DBStorage:
+    """stores data in the database"""
     __engine = None
     __session = None
 
     def __init__(self):
+        """initializes variables for the DBStorage class"""
         user = os.getenv('HBNB_MYSQL_USER')
         passwd = os.getenv('HBNB_MYSQL_PWD')
         host = os.getenv('HBNB_MYSQL_HOST')
@@ -38,6 +40,7 @@ class DBStorage:
             Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
+        """return queries objects of specified class from the database"""
         if not self.__session:
             self.reload()
         objects = {}
@@ -58,22 +61,27 @@ class DBStorage:
 
     def get(self, cls, id):
         """Returns the object based on the class name and its ID"""
-        key = cls + "." + id
-        return self.all().get(key, None)
+        cls_instance = name2class[cls]
+        return self.__session.query(cls_instance).filter(
+            cls_instance.id == id).first()
 
     def reload(self):
+        """reload the database"""
         session_factory = sessionmaker(bind=self.__engine,
                                        expire_on_commit=False)
         Base.metadata.create_all(self.__engine)
         self.__session = scoped_session(session_factory)
 
     def new(self, obj):
+        """add the object to the current DB session"""
         self.__session.add(obj)
 
     def save(self):
+        """commit all changes of the current DB session"""
         self.__session.commit()
 
     def delete(self, obj=None):
+        """delete from the current DB session obj if not None"""
         if not self.__session:
             self.reload()
         if obj:
@@ -82,12 +90,3 @@ class DBStorage:
     def close(self):
         """Dispose of current session if active"""
         self.__session.remove()
-
-    def count(self, cls=None):
-        """Return number of objects in storage"""
-        return len(self.all(cls))
-
-    def get(self, cls, id):
-        """Return object based on it class name and id"""
-        key = cls + "." + id
-        return self.all().get(key, None)
