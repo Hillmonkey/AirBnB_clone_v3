@@ -29,7 +29,7 @@ class DBStorage:
     __session = None
 
     def __init__(self):
-        """initializes variales for the DBStorage class"""
+        """initializes variables for the DBStorage class"""
         user = os.getenv('HBNB_MYSQL_USER')
         passwd = os.getenv('HBNB_MYSQL_PWD')
         host = os.getenv('HBNB_MYSQL_HOST')
@@ -61,8 +61,9 @@ class DBStorage:
 
     def get(self, cls, id):
         """Returns the object based on the class name and its ID"""
-        key = cls + "." + id
-        return self.all().get(key, None)
+        cls_instance = name2class[cls]
+        return self.__session.query(cls_instance).filter(
+            cls_instance.id == id).first()
 
     def reload(self):
         """reload the database"""

@@ -3,6 +3,7 @@
 testing methods for dbstorage"""
 
 
+from models import storage
 from models.engine import db_storage
 from models.base_model import Base
 from models.amenity import Amenity
@@ -13,16 +14,16 @@ from models.review import Review
 from models.user import User
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
+from os import getenv
 import inspect
 import json
 import inspect
-import os
 import pep8
 import unittest
 import sqlalchemy
 
-
-DBStorage = db_storage.DBStorage
+if getenv("HBNB_TYPE_STORAGE") == 'db':
+    DBStorage = db_storage.DBStorage
 
 classes = {
     'Amenity': Amenity,
@@ -110,7 +111,7 @@ class TestDBStorage(unittest.TestCase):
         self.storage.save()
 
         state_count = self.storage.count("State")
-        print("state count returned by count():", state_count)
+#        print("state count returned by count():", state_count)
         state_num_query = self.storage._DBStorage__session.query(State).count()
 #        print("type of:", type(storage._DBStorage__session))
 #        print("state count returned by query:", state_count)
