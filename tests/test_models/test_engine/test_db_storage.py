@@ -85,7 +85,7 @@ class TestDBStorage(unittest.TestCase):
     all tests to run on Database Storage"""
 
     def setUp(self):
-        connect & reload the database
+        """connect & reload the database"""
         self.storage = db_storage.DBStorage()
         # how come the reload() in models/__init__ doesn't take care of it?
         self.storage.reload()
