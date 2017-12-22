@@ -26,6 +26,7 @@ classes = {
 }
 '''
 
+
 @app_views.route('/status')
 def status_OK():
     """returns 'status: OK'"""
