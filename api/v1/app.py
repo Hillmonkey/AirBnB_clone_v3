@@ -13,6 +13,7 @@ app.register_blueprint(app_views)
 def teardown_close(exception):
     storage.close()
 
+
 @app.errorhandler(404)
 def page_not_found(e):
     return jsonify(error="Not found"), 404
