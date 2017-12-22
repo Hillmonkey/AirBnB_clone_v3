@@ -7,6 +7,8 @@ from datetime import datetime
 import inspect
 from models import city
 from models.base_model import BaseModel
+from models.state import State
+from models.engine import db_storage
 import os
 import pep8
 import unittest
@@ -15,6 +17,7 @@ City = city.City
 
 
 class TestCityDocs(unittest.TestCase):
+
     """Tests to check the documentation and style of City class"""
     @classmethod
     def setUpClass(cls):
@@ -60,52 +63,36 @@ class TestCityDocs(unittest.TestCase):
 
 class TestCity(unittest.TestCase):
     """Test the City class"""
+    def setUp(self):
+        if (os.getenv('HBNB_TYPE_STORAGE') == 'db'):
+            self.session = db_storage.DBStorage()
+            self.session.reload()
+
+        self.state = State(name="Another State")
+        self.city = City(name="Another City", state_id=self.state.id)
+
+        if (os.getenv('HBNB_TYPE_STORAGE') == 'db'):
+            self.session.new(self.state)
+            self.session.new(self.city)
+            self.session.save()
+
     def test_is_subclass(self):
         """Test that City is a subclass of BaseModel"""
-        city = City()
-        self.assertIsInstance(city, BaseModel)
-        self.assertTrue(hasattr(city, "id"))
-        self.assertTrue(hasattr(city, "created_at"))
-        self.assertTrue(hasattr(city, "updated_at"))
+        self.assertIsInstance(self.city, BaseModel)
+        self.assertTrue(hasattr(self.city, "id"))
+        self.assertTrue(hasattr(self.city, "created_at"))
+        self.assertTrue(hasattr(self.city, "updated_at"))
 
-    @unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') == 'db',
-                     "Testing DBStorage")
     def test_name_attr(self):
-        """Test that City has attribute name, and it's an empty string"""
-        city = City()
-        self.assertTrue(hasattr(city, "name"))
-        self.assertEqual(city.name, "")
-
-    @unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') != 'db',
-                     "Testing FileStorage")
-    def test_name_attr_db(self):
-        """Test for DBStorage name attribute"""
-        city = City()
-        self.assertTrue(hasattr(City, "name"))
-        self.assertIsInstance(City.name, InstrumentedAttribute)
-
-    @unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') == 'db',
-                     "Testing DBStorage")
-    def test_state_id_attr(self):
-        """Test that City has attribute state_id, and it's an empty string"""
-        city = City()
-        self.assertTrue(hasattr(city, "state_id"))
-        self.assertEqual(city.state_id, "")
-
-    @unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') != 'db',
-                     "Testing FileStorage")
-    def test_state_id_attr_db(self):
-        """Test for DBStorage state_id attribute"""
-        city = City()
-        self.assertTrue(hasattr(City, "state_id"))
-        self.assertIsInstance(City.state_id, InstrumentedAttribute)
+        """Test that City has attribute name, and it's not empty string"""
+        self.assertTrue(hasattr(self.city, "name"))
+        self.assertTrue(self.city.name)
 
     def test_to_dict_creates_dict(self):
         """test to_dict method creates a dictionary with proper attrs"""
-        c = City()
-        new_d = c.to_dict()
+        new_d = self.city.to_dict()
         self.assertEqual(type(new_d), dict)
-        for attr in c.__dict__:
+        for attr in self.city.__dict__:
             with self.subTest(attr=attr):
                 if attr == '_sa_instance_state':
                     continue
@@ -116,16 +103,16 @@ class TestCity(unittest.TestCase):
     def test_to_dict_values(self):
         """test that values in dict returned from to_dict are correct"""
         t_format = "%Y-%m-%dT%H:%M:%S.%f"
-        c = City()
-        new_d = c.to_dict()
+        new_d = self.city.to_dict()
         self.assertEqual(new_d["__class__"], "City")
         self.assertEqual(type(new_d["created_at"]), str)
         self.assertEqual(type(new_d["updated_at"]), str)
-        self.assertEqual(new_d["created_at"], c.created_at.strftime(t_format))
-        self.assertEqual(new_d["updated_at"], c.updated_at.strftime(t_format))
+        self.assertEqual(new_d["created_at"],
+                         self.city.created_at.strftime(t_format))
+        self.assertEqual(new_d["updated_at"],
+                         self.city.updated_at.strftime(t_format))
 
     def test_str(self):
         """test that the str method has the correct output"""
-        city = City()
-        string = "[City] ({}) {}".format(city.id, city.__dict__)
-        self.assertEqual(string, str(city))
+        string = "[City] ({}) {}".format(self.city.id, self.city.__dict__)
+        self.assertEqual(string, str(self.city))

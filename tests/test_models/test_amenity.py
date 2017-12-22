@@ -4,6 +4,7 @@ Contains the TestAmenityDocs classes
 """
 
 from datetime import datetime
+from models.engine import db_storage
 import inspect
 from models import amenity
 from models.base_model import BaseModel
@@ -60,36 +61,28 @@ class TestAmenityDocs(unittest.TestCase):
 
 class TestAmenity(unittest.TestCase):
     """Test the Amenity class"""
+    def setUp(self):
+        if (os.getenv('HBNB_TYPE_STORAGE') == 'db'):
+            self.session = db_storage.DBStorage()
+            self.session.reload()
+
+        self.amenity = Amenity(name="kitchen")
+        if (os.getenv('HBNB_TYPE_STORAGE') == 'db'):
+            self.session.new(self.amenity)
+            self.session.save()
+
     def test_is_subclass(self):
         """Test that Amenity is a subclass of BaseModel"""
-        amenity = Amenity()
-        self.assertIsInstance(amenity, BaseModel)
-        self.assertTrue(hasattr(amenity, "id"))
-        self.assertTrue(hasattr(amenity, "created_at"))
-        self.assertTrue(hasattr(amenity, "updated_at"))
-
-    @unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') == 'db',
-                     "Testing DBStorage")
-    def test_name_attr(self):
-        """Test that Amenity has attribute name, and it's as an empty string"""
-        amenity = Amenity()
-        self.assertTrue(hasattr(amenity, "name"))
-        self.assertEqual(amenity.name, "")
-
-    @unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') != 'db',
-                     "Testing FileStorage")
-    def test_name_attr_db(self):
-        """Test for DBStorage name attribute"""
-        amenity = Amenity()
-        self.assertTrue(hasattr(Amenity, "name"))
-        self.assertIsInstance(Amenity.name, InstrumentedAttribute)
+        self.assertIsInstance(self.amenity, BaseModel)
+        self.assertTrue(hasattr(self.amenity, "id"))
+        self.assertTrue(hasattr(self.amenity, "created_at"))
+        self.assertTrue(hasattr(self.amenity, "updated_at"))
 
     def test_to_dict_creates_dict(self):
         """test to_dict method creates a dictionary with proper attrs"""
-        am = Amenity()
-        new_d = am.to_dict()
+        new_d = self.amenity.to_dict()
         self.assertEqual(type(new_d), dict)
-        for attr in am.__dict__:
+        for attr in self.amenity.__dict__:
             with self.subTest(attr=attr):
                 if attr == '_sa_instance_state':
                     continue
@@ -100,16 +93,17 @@ class TestAmenity(unittest.TestCase):
     def test_to_dict_values(self):
         """test that values in dict returned from to_dict are correct"""
         t_format = "%Y-%m-%dT%H:%M:%S.%f"
-        am = Amenity()
-        new_d = am.to_dict()
+        new_d = self.amenity.to_dict()
         self.assertEqual(new_d["__class__"], "Amenity")
         self.assertEqual(type(new_d["created_at"]), str)
         self.assertEqual(type(new_d["updated_at"]), str)
-        self.assertEqual(new_d["created_at"], am.created_at.strftime(t_format))
-        self.assertEqual(new_d["updated_at"], am.updated_at.strftime(t_format))
+        self.assertEqual(new_d["created_at"],
+                         self.amenity.created_at.strftime(t_format))
+        self.assertEqual(new_d["updated_at"],
+                         self.amenity.updated_at.strftime(t_format))
 
     def test_str(self):
         """test that the str method has the correct output"""
-        amenity = Amenity()
-        string = "[Amenity] ({}) {}".format(amenity.id, amenity.__dict__)
-        self.assertEqual(string, str(amenity))
+        string = "[Amenity] ({}) {}".format(
+            self.amenity.id, self.amenity.__dict__)
+        self.assertEqual(string, str(self.amenity))

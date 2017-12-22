@@ -34,6 +34,7 @@ classes = {
     'User': User
 }
 
+
 @unittest.skipIf(getenv('HBNB_TYPE_STORAGE') != 'db', "Testing FileStorage")
 class TestDBStorageDocs(unittest.TestCase):
     """Tests to check the documentation and style of DBStorage class"""
@@ -79,6 +80,7 @@ test_db_storage.py'])
             self.assertTrue(len(func[1].__doc__) >= 1,
                             "{:s} method needs a docstring".format(func[0]))
 
+
 @unittest.skipIf(getenv('HBNB_TYPE_STORAGE') != 'db', "Testing FileStorage")
 class TestDBStorage(unittest.TestCase):
     """class: TestDbStorage
@@ -86,42 +88,39 @@ class TestDBStorage(unittest.TestCase):
 
     def setUp(self):
         """connect & reload the database"""
-        self.storage = db_storage.DBStorage()
-        # how come the reload() in models/__init__ doesn't take care of it?
-        self.storage.reload()
+        pass
 
     def tearDown(self):
         '''terminate database connection'''
-        self.storage.close()
+        pass
 
     def test_get(self):
         '''test that get returns object based on cls name & id
         database copy of new object == copy via get'''
         new_obj = State(name="Test get State")
-        self.storage.new(new_obj)
-        self.storage.save()
-        output = self.storage.get("State", new_obj.id)
+        storage.new(new_obj)
+        storage.save()
+        output = storage.get("State", new_obj.id)
         self.assertIs(new_obj, output)
+        # delete the data created for testing from DB
+        storage.delete(new_obj)
 
     def test_count(self):
         '''test that count returns the number of objects based on clsname,
         or number of all objects if cls=None'''
         new_obj = State(name="Test count State")
-        self.storage.new(new_obj)
-        self.storage.save()
+        storage.new(new_obj)
+        storage.save()
 
-        state_count = self.storage.count("State")
-#        print("state count returned by count():", state_count)
-        state_num_query = self.storage._DBStorage__session.query(State).count()
-#        print("type of:", type(storage._DBStorage__session))
-#        print("state count returned by query:", state_count)
+        state_count = storage.count("State")
+        state_num_query = storage._DBStorage__session.query(State).count()
         self.assertEqual(state_count, state_num_query)
 
-        all_count = self.storage.count()
-#        print("all object count returned by count():", all_count)
+        all_count = storage.count()
         obj_num_query = 0
         for key, value in classes.items():
-            obj_num_query += self.storage._DBStorage__session.query(
+            obj_num_query += storage._DBStorage__session.query(
                 value).count()
-#        print("all object count returned by query:", obj_num_query)
         self.assertEqual(all_count, obj_num_query)
+        # delete the data created for testing from DB
+        storage.delete(new_obj)
