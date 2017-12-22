@@ -34,7 +34,7 @@ classes = {
     'User': User
 }
 
-
+@unittest.skipIf(getenv('HBNB_TYPE_STORAGE') != 'db', "Testing FileStorage")
 class TestDBStorageDocs(unittest.TestCase):
     """Tests to check the documentation and style of DBStorage class"""
     @classmethod
@@ -79,7 +79,7 @@ test_db_storage.py'])
             self.assertTrue(len(func[1].__doc__) >= 1,
                             "{:s} method needs a docstring".format(func[0]))
 
-
+@unittest.skipIf(getenv('HBNB_TYPE_STORAGE') != 'db', "Testing FileStorage")
 class TestDBStorage(unittest.TestCase):
     """class: TestDbStorage
     all tests to run on Database Storage"""
