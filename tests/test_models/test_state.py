@@ -68,9 +68,6 @@ class TestState(unittest.TestCase):
         self.state = State(name="A State")
         if (os.getenv('HBNB_TYPE_STORAGE') == 'db'):
             self.session.new(self.state)
-#            self.session.new(self.city)
-#            self.session.new(self.user)
-#            self.session.new(self.place)
             self.session.save()
 
     def test_is_subclass(self):
@@ -83,7 +80,6 @@ class TestState(unittest.TestCase):
     def test_name_attr(self):
         """Test that State has attribute name, and it's not an empty string"""
         self.assertTrue(hasattr(self.state, "name"))
-        print("state name:", self.state.name)
         self.assertTrue(self.state.name)
 
     def test_to_dict_creates_dict(self):
