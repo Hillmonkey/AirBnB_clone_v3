@@ -5,8 +5,6 @@ from api.v1.views import app_views
 from flask import abort, jsonify, request
 import json
 from models import storage
-from models.state import State
-from models.city import City
 from models.amenity import Amenity
 
 
