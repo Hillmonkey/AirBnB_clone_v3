@@ -45,7 +45,7 @@ def delete_place(place_id):
 
 @app_views.route('/cities/<city_id>/places',
                  methods=['POST'], strict_slashes=False)
-def add_place(state_id):
+def add_place(city_id):
     """add a place to storage"""
     linked_city = storage.get("City", city_id)
     if linked_city is None:
@@ -56,7 +56,8 @@ def add_place(state_id):
     # new_place = json.loads(input_json) -- not necessary, new_place is a dict
     if new_place.get("user_id") is None:
         return jsonify({'error': "Missing user_id"}), 400
-    linked_user = storage.get("User", new_place.get("user_id").id)
+
+    linked_user = storage.get("User", new_place.get("user_id"))
     if linked_user is None:
         abort(404)
     if new_place.get("name") is None:
